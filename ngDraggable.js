@@ -423,8 +423,8 @@ angular.module("ngDraggable", [])
                                 });
                             }
 
-                            _tx = obj.tx + _dragOffset.left;
-                            _ty = obj.ty + _dragOffset.top;
+                            _tx = obj.x - _dragOffset.left;
+                            _ty = obj.y - _dragOffset.top;
 
                             moveElement(_tx, _ty);
                         }
