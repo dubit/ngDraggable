@@ -139,6 +139,10 @@ angular.module("ngDraggable", [])
 
                         _mx = ngDraggable.inputEvent(evt).pageX;//ngDraggable.getEventProp(evt, 'pageX');
                         _my = ngDraggable.inputEvent(evt).pageY;//ngDraggable.getEventProp(evt, 'pageY');
+                        if (_mx == undefined) {
+                            _mx = evt.originalEvent.touches[0].pageX;
+                            _my = evt.originalEvent.touches[0].pageY;
+                        }
                         _mrx = _mx - offset.left;
                         _mry = _my - offset.top;
                          if (_centerAnchor) {
@@ -172,6 +176,10 @@ angular.module("ngDraggable", [])
 
                         _mx = ngDraggable.inputEvent(evt).pageX;//ngDraggable.getEventProp(evt, 'pageX');
                         _my = ngDraggable.inputEvent(evt).pageY;//ngDraggable.getEventProp(evt, 'pageY');
+                        if (_mx == undefined) {
+                            _mx = evt.originalEvent.touches[0].pageX;
+                            _my = evt.originalEvent.touches[0].pageY;
+                        }
 
                         if (_centerAnchor) {
                             _tx = _mx - element.centerX - _dragOffset.left;
