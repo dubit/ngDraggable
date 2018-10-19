@@ -189,7 +189,7 @@ angular.module("ngDraggable", [])
                             _ty = _my - _mry - _dragOffset.top;
                         }
 
-                        moveElement(_tx, _ty);
+                        moveElement(_tx, _ty, 1);
 
                         $rootScope.$broadcast('draggable:move', { x: _mx, y: _my, tx: _tx, ty: _ty, event: evt, element: element, data: _data, uid: _myid });
                     };
@@ -222,13 +222,13 @@ angular.module("ngDraggable", [])
                         element.css({'position':'',top:'',left:''});
                     };
 
-                    var moveElement = function (x, y) {
+                    var moveElement = function (x, y, scale) {
                         if(allowTransform) {
                             element.css({
-                                transform: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ' + x + ', ' + y + ', 0, 1)',
+                                transform: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ' + x + ', ' + y + ', 0, 1) scale(' + scale + ')',
                                 'z-index': 99999,
-                                '-webkit-transform': 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ' + x + ', ' + y + ', 0, 1)',
-                                '-ms-transform': 'matrix(1, 0, 0, 1, ' + x + ', ' + y + ')'
+                                '-webkit-transform': 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ' + x + ', ' + y + ', 0, 1) scale(' + scale + ')',
+                                '-ms-transform': 'matrix(1, 0, 0, 1, ' + x + ', ' + y + ') scale(' + scale + ')'
                             });
                         }else{
                             element.css({'left':x+'px','top':y+'px', 'position':'fixed'});
@@ -372,6 +372,7 @@ angular.module("ngDraggable", [])
                 link: function (scope, element, attrs) {
                     var img, _allowClone=true;
                     var _dragOffset = null;
+                    var _appScale = 1;
                     var onDragStopCallback = $parse(attrs.ngDragEnd);
                     var onDragMoveCallback = $parse(attrs.ngDragMove);
                     scope.clonedData = {};
@@ -415,9 +416,10 @@ angular.module("ngDraggable", [])
                             element.css('width', obj.element[0].offsetWidth);
                             element.css('height', obj.element[0].offsetHeight);
 
-                            moveElement(obj.tx, obj.ty);
+                            moveElement(obj.tx, obj.ty, _appScale);
                         }
 
+                        _appScale = angular.isDefined(attrs.scale) ? scope.$eval(attrs.scale) : 1;
                         _dragOffset = angular.isDefined(attrs.offset) ? scope.$eval(attrs.offset) : element[0].getBoundingClientRect();
                     };
                     var onDragMove = function(evt, obj) {
@@ -431,10 +433,10 @@ angular.module("ngDraggable", [])
                                 });
                             }
 
-                            _tx = obj.x - _dragOffset.left;
-                            _ty = obj.y - _dragOffset.top;
+                            _tx = (obj.x - _dragOffset.left) * _appScale;
+                            _ty = (obj.y - _dragOffset.top) * _appScale;
 
-                            moveElement(_tx, _ty);
+                            moveElement(_tx, _ty, _appScale);
                         }
                     };
                     var onDragEnd = function(evt, obj) {
@@ -453,11 +455,11 @@ angular.module("ngDraggable", [])
                     var reset = function() {
                         element.css({left:0,top:0, position:'fixed', 'z-index':-1, visibility:'hidden'});
                     };
-                    var moveElement = function(x,y) {
+                    var moveElement = function(x, y, scale) {
                         element.css({
-                            transform: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, '+x+', '+y+', 0, 1)', 'z-index': 99999, 'visibility': 'visible',
-                            '-webkit-transform': 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, '+x+', '+y+', 0, 1)',
-                            '-ms-transform': 'matrix(1, 0, 0, 1, '+x+', '+y+')'
+                            transform: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, '+x+', '+y+', 0, 1)  scale(' + scale + ')', 'z-index': 99999, 'visibility': 'visible',
+                            '-webkit-transform': 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, '+x+', '+y+', 0, 1) scale(' + scale + ')',
+                            '-ms-transform': 'matrix(1, 0, 0, 1, '+x+', '+y+') scale(' + scale + ')'
                             //,margin: '0'  don't monkey with the margin,
                         });
                     };
