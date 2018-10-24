@@ -103,17 +103,8 @@ angular.module("ngDraggable", [])
                             return;
                         }
 
-                        if(_hasTouch){
-                            cancelPress();
-                            _pressTimer = setTimeout(function(){
-                                cancelPress();
-                                onlongpress(evt);
-                            },100);
-                            $document.on(_moveEvents, cancelPress);
-                            $document.on(_releaseEvents, cancelPress);
-                        }else{
-                            onlongpress(evt);
-                        }
+
+                        onlongpress(evt);
 
                     };
 
@@ -189,7 +180,9 @@ angular.module("ngDraggable", [])
                             _ty = _my - _mry - _dragOffset.top;
                         }
 
-                        moveElement(_tx, _ty, 1);
+                        var _appScale = angular.isDefined(attrs.scale) ? scope.$eval(attrs.scale) : 1;
+                        var _displayScale = angular.isDefined(attrs.displayscale) ? scope.$eval(attrs.displayscale) : 1;
+                        moveElement(_tx * _appScale, _ty * _appScale, _displayScale);
 
                         $rootScope.$broadcast('draggable:move', { x: _mx, y: _my, tx: _tx, ty: _ty, event: evt, element: element, data: _data, uid: _myid });
                     };
@@ -373,6 +366,7 @@ angular.module("ngDraggable", [])
                     var img, _allowClone=true;
                     var _dragOffset = null;
                     var _appScale = 1;
+                    var _displayScale = 1;
                     var onDragStopCallback = $parse(attrs.ngDragEnd);
                     var onDragMoveCallback = $parse(attrs.ngDragMove);
                     scope.clonedData = {};
@@ -416,10 +410,12 @@ angular.module("ngDraggable", [])
                             element.css('width', obj.element[0].offsetWidth);
                             element.css('height', obj.element[0].offsetHeight);
 
-                            moveElement(obj.tx, obj.ty, _appScale);
+                            _displayScale = angular.isDefined(attrs.displayscale) ? scope.$eval(attrs.displayscale) : 1;
+                            moveElement(obj.tx, obj.ty, _displayScale);
                         }
 
                         _appScale = angular.isDefined(attrs.scale) ? scope.$eval(attrs.scale) : 1;
+                        _displayScale = angular.isDefined(attrs.displayscale) ? scope.$eval(attrs.displayscale) : 1;
                         _dragOffset = angular.isDefined(attrs.offset) ? scope.$eval(attrs.offset) : element[0].getBoundingClientRect();
                     };
                     var onDragMove = function(evt, obj) {
@@ -436,7 +432,8 @@ angular.module("ngDraggable", [])
                             _tx = (obj.x - _dragOffset.left) * _appScale;
                             _ty = (obj.y - _dragOffset.top) * _appScale;
 
-                            moveElement(_tx, _ty, _appScale);
+                            _displayScale = angular.isDefined(attrs.displayscale) ? scope.$eval(attrs.displayscale) : 1;
+                            moveElement(_tx, _ty, _displayScale);
                         }
                     };
                     var onDragEnd = function(evt, obj) {
