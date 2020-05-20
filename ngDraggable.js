@@ -328,15 +328,15 @@ angular.module("ngDraggable", [])
                     };
 
                     var isTouching = function(mouseX, mouseY, dragElement) {
-                        var touching = hitTest(mouseX, mouseY);
                         // Check if we are still on the start position for 'click' type events
                         var isStartPosition = mouseX == startDragPosition.x && mouseY == startDragPosition.y;
-                        scope.isTouching = touching || isStartPosition;
+                        var touching = hitTest(mouseX, mouseY) || isStartPosition;
+                        scope.isTouching = touching;
                         if(touching){
                             _lastDropTouch = element;
                         }
                         updateDragStyles(touching, dragElement);
-                        return touching || isStartPosition;
+                        return touching;
                     };
 
                     var updateDragStyles = function(touching, dragElement) {
