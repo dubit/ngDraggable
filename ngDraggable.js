@@ -251,6 +251,8 @@ angular.module("ngDraggable", [])
                     var onDragStopCallback = $parse(attrs.ngDragStop);
                     var onDragMoveCallback = $parse(attrs.ngDragMove);
 
+                    var startDragPosition = { x: 0, y: 0 };
+
                     var initialize = function () {
                         toggleListeners(true);
                     };
@@ -275,6 +277,7 @@ angular.module("ngDraggable", [])
                     };
                     var onDragStart = function(evt, obj) {
                         if(! _dropEnabled)return;
+                        startDragPosition = { x: obj.x, y: obj.y };
                         isTouching(obj.x,obj.y,obj.element);
 
                         if (attrs.ngDragStart) {
@@ -325,7 +328,9 @@ angular.module("ngDraggable", [])
                     };
 
                     var isTouching = function(mouseX, mouseY, dragElement) {
-                        var touching= hitTest(mouseX, mouseY);
+                        // Check if we are still on the start position for 'click' type events
+                        var isStartPosition = mouseX == startDragPosition.x && mouseY == startDragPosition.y;
+                        var touching = hitTest(mouseX, mouseY) || isStartPosition;
                         scope.isTouching = touching;
                         if(touching){
                             _lastDropTouch = element;
