@@ -328,9 +328,13 @@ angular.module("ngDraggable", [])
                     };
 
                     var isTouching = function(mouseX, mouseY, dragElement) {
-                        // Check if we are still on the start position for 'click' type events
-                        var isStartPosition = mouseX == startDragPosition.x && mouseY == startDragPosition.y;
-                        var touching = hitTest(mouseX, mouseY) || isStartPosition;
+                        // Check if we are close on the start position for 'click' type events
+                        var clickDistanceLimit = 6;
+                        var a = mouseX - startDragPosition.x;
+                        var b = mouseY - startDragPosition.y;
+                        var distance = Math.hypot(a, b);
+
+                        var touching = hitTest(mouseX, mouseY) || distance < clickDistanceLimit;
                         scope.isTouching = touching;
                         if(touching){
                             _lastDropTouch = element;
